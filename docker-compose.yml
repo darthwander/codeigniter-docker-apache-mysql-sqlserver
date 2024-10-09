@@ -1,0 +1,36 @@
+version: '3'
+services:
+  # Serviço do MySQL
+  database:
+    image: mysql:5.7
+    container_name: mysql-intranet
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'intranet'
+      MYSQL_USER: 'intranet'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: 'password'
+    ports:
+      - '3306:3306'
+    volumes:
+      - './.mysql-data/db:/var/lib/mysql'
+    networks:
+      - minha-rede
+
+  # Serviço do CodeIgniter com Apache e PHP
+  app:
+    build:
+      context: .
+    ports:
+      - "8090:80"
+    volumes:
+      - ../codeigniter:/var/www/html/codeigniter
+    container_name: codeigniter-intranet
+    restart: unless-stopped
+    networks:
+      - minha-rede
+
+# Rede compartilhada entre os containers
+networks:
+  minha-rede:
+    driver: bridge
